@@ -6,6 +6,4 @@ runtime.
 This project is currently ARCHIVED.
 
 Missing functionality:
-*Combat
-*Single use items for the inventory (Like rope, torches, potions etc...) and their use cases
-*Resting (Heals endurance to maximum)
+Combat, Single use items for the inventory (Like rope, torches, potions etc...) and their use cases, Resting (Heals endurance to maximum)
