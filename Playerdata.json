@@ -1,0 +1,17 @@
+{
+  "location_name" : "beginning",
+  "maxStats" : [ 21, 13, 13 ],
+  "stats" : [ 24, 17, 17, 0 ],
+  "inventory" : {
+    "magical_brews" : [ ],
+    "rations" : 10,
+    "weapon" : [ {
+      "weapon_name" : "Broadsword",
+      "weapon_strength" : 0
+    } ],
+    "armor" : [ {
+      "armor_name" : "Leather Jerkin",
+      "armor_strength" : 0
+    } ]
+  }
+}
