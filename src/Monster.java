@@ -1,7 +1,8 @@
 public class Monster extends Stats {
-    String Name;
-    Monster(String Name) {
-        this.Name = Name;
+    private String name;
+
+    Monster(String name) {
+        this.name = name;
     }
 
     int[] getStats(int Endurance, int Skill) {
@@ -11,7 +12,18 @@ public class Monster extends Stats {
         return stats;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public int getEndurance() {
+        return stats[0];
+    }
+
+    public int getSkill() {
+        return stats[1];
+    }
     public void Death() {
-        System.out.println("You bested the " + Name);
+        System.out.println("You bested the " + name);
     }
 }

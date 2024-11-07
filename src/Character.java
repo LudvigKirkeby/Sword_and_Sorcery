@@ -96,6 +96,14 @@ public class Character extends Stats {
         System.out.println("Gold: " + adventure.currentStats[3]);
     }
 
+    public int getEndurance() {
+        return maxStats[0];
+    }
+
+    public int getSkill() {
+        return maxStats[1];
+    }
+
 }
 
 

@@ -29,4 +29,25 @@ public class Location {
         return description;
     }
 
+    public void getExitString() {
+        System.out.print("Exits: ");
+        if (northExit != null) System.out.print("north ");
+        if (eastExit != null) System.out.print("east ");
+        if (southExit != null) System.out.print("south ");
+        if (westExit != null) System.out.print("west ");
+        System.out.println();
+    }
+
+    public Location getDirections(String direction) {
+        Location next_Location;
+        next_Location = switch (direction) {
+            case "north" -> northExit;
+            case "east" -> eastExit;
+            case "south" -> southExit;
+            case "west" -> westExit;
+            default -> null;
+        };
+        return next_Location;
+    }
+
 }

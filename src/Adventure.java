@@ -1,17 +1,14 @@
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import java.io.File;
-import java.lang.reflect.Array;
-import java.util.*;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.BooleanNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
+import java.util.Scanner;
 
 public class Adventure {
     boolean new_Game = false;
@@ -34,21 +31,21 @@ public class Adventure {
         exit_map = new HashMap<>();
         Equipment = new HashMap<>();
 
-        Initialise_Locations initialize = new Initialise_Locations(objectMapper, locations, exits, exit_map);
+        new Initialise_Locations(objectMapper, locations, exits, exit_map);
     }
 
     void NewGame_or_Load() {
         if (new_Game) {
             character.createNewCharacter(objectMapper, locations, this);
         } else {
-            character.loadSaveData(objectMapper, locations,this);
+            character.loadSaveData(objectMapper, locations, this);
         }
     }
 
     void combat(Monster monster) {
         in_combat = true;
-        System.out.println("This room contains combat! You are fighting a " + monster.Name);
-        while (character.stats[0] > 0 && monster.stats[0] > 0) {
+        System.out.println("This room contains combat! You are fighting a " + monster.getName());
+        while (character.getEndurance() > 0 && monster.getEndurance() > 0) {
             if (character.RollStrength() > monster.RollStrength()) {
                 monster.stats[0] -= 2;
                 if (monster.stats[0] == 0) {
@@ -82,12 +79,7 @@ public class Adventure {
         System.out.println();
         System.out.println("The Labyrinth of Death awaits thee, traveller. Let us get thy prepared.");
         System.out.println();
-        System.out.print("Exits: ");
-        if (currentLocation.northExit != null) System.out.print("north ");
-        if (currentLocation.eastExit != null) System.out.print("east ");
-        if (currentLocation.southExit != null) System.out.print("south ");
-        if (currentLocation.westExit != null) System.out.print("west ");
-        System.out.println();
+        printLocationInfo();
     }
 
     public boolean processCommand(String command) throws IOException {
@@ -114,7 +106,7 @@ public class Adventure {
                 int[] action_stats = action.change_stats();
                 for (int i = 0; i < currentStats.length; i++) {
                     if (i < 3) {
-                            currentStats[i] = currentStats[i] + action_stats[i];
+                        currentStats[i] = currentStats[i] + action_stats[i];
                     } else {
                         currentStats[i] += action_stats[i];
                     }
@@ -143,35 +135,31 @@ public class Adventure {
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File("C:/Users/ludvi/IdeaProjects/Sword and Sorcery/Playerdata.json"), savefile);
             System.out.println("Successfully saved the game.");
         } catch (IOException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
+            System.out.println("Error: Game did not save.");
         }
+    }
+
+    private void printLocationInfo() {
+        System.out.println(currentLocation);
+        for (Action x : currentLocation.getActions()) {
+            System.out.println(x.getDescription());
+        }
+        currentLocation.getExitString();
     }
 
     private void go(String direction) {
         Location nextLocation = null;
-        if (!in_combat) {
-            if (direction.equals("north")) nextLocation = currentLocation.northExit;
-            else if (direction.equals("east")) nextLocation = currentLocation.eastExit;
-            else if (direction.equals("south")) nextLocation = currentLocation.southExit;
-            else if (direction.equals("west")) nextLocation = currentLocation.westExit;
 
-            if (nextLocation != null) {
-                currentLocation = nextLocation;
-                System.out.println(currentLocation);
-                for (Action x : currentLocation.getActions()) {
-                    System.out.println(x.getDescription());
-                }
-                System.out.print("Exits: ");
-                if (currentLocation.northExit != null) System.out.print("north ");
-                if (currentLocation.eastExit != null) System.out.print("east ");
-                if (currentLocation.southExit != null) System.out.print("south ");
-                if (currentLocation.westExit != null) System.out.print("west ");
-                System.out.println();
-            } else {
-                System.out.println("There is no door!");
-            }
+        if (!in_combat) {
+            nextLocation = currentLocation.getDirections(direction);
         }
 
+        if (nextLocation != null) {
+            currentLocation = nextLocation;
+            printLocationInfo();
+        } else {
+            System.out.println("There is no door!");
+        }
     }
+
 }
