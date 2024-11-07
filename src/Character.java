@@ -5,13 +5,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
 public class Character extends Stats {
     int[] maxStats;
-
 
     Character() {
         maxStats = new int[3];
@@ -22,7 +20,7 @@ public class Character extends Stats {
         System.exit(0);
     }
 
-    void createNewCharacter(ObjectMapper objectMapper, Map<String, Integer> Equipment, int[] currentStats, Location currentLocation, int currentRations, Map<String, Location> locations, Adventure adventure) {
+    void createNewCharacter(ObjectMapper objectMapper, Map<String, Location> locations, Adventure adventure) {
         System.out.println("The stars will decide your fate. Let us pray they are Merciful.");
         try {
             JsonNode savefile = objectMapper.readTree(new File("Playerdata.json"));
@@ -62,7 +60,7 @@ public class Character extends Stats {
         }
     }
 
-    void loadSaveData(ObjectMapper objectMapper, Map<String, Integer> Equipment, int[] currentStats, int[] maxStats, Location currentLocation, int currentRations, Map<String, Location> locations, Adventure adventure) {
+    void loadSaveData(ObjectMapper objectMapper, Map<String, Location> locations, Adventure adventure) {
         try {
             JsonNode savefile = objectMapper.readTree(new File("Playerdata.json"));
             System.out.println("Loaded save file");
@@ -72,9 +70,9 @@ public class Character extends Stats {
 
             for (int i = 0; i < 3; i++) {
                 maxStats[i] = savefile.get("maxStats").get(i).asInt();
-                System.out.println(currentStats[i] + " / " + maxStats[i]);
+                System.out.println(adventure.currentStats[i] + " / " + maxStats[i]);
             }
-            System.out.println(currentStats[3]);
+            System.out.println(adventure.currentStats[3]);
 
             adventure.currentLocation = locations.get(savefile.get("location_name").asText());
             adventure.currentRations = savefile.get("inventory").get("rations").asInt();

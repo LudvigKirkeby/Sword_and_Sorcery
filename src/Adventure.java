@@ -39,9 +39,9 @@ public class Adventure {
 
     void NewGame_or_Load() {
         if (new_Game) {
-            character.createNewCharacter(objectMapper, Equipment, currentStats, currentLocation, currentRations, locations, this);
+            character.createNewCharacter(objectMapper, locations, this);
         } else {
-            character.loadSaveData(objectMapper, Equipment, currentStats, maxStats, currentLocation, currentRations, locations, this);
+            character.loadSaveData(objectMapper, locations,this);
         }
     }
 
