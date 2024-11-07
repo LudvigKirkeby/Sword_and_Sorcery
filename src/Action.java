@@ -18,8 +18,15 @@ public class Action {
         else{return false;}
     }
 
-    public int[] change_stats() {
-        return stats;
+    public int[] change_stats(int[] currentStats) {
+        for (int i = 0; i < currentStats.length; i++) {
+            if (i < 3) {
+                currentStats[i] = currentStats[i] + stats[i];
+            } else {
+                currentStats[i] += stats[i];
+            }
+        }
+        return currentStats;
     }
 
     public String execute(){

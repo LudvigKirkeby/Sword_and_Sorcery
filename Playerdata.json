@@ -1,7 +1,7 @@
 {
   "location_name" : "blockade_brown_cobblestone",
-  "maxStats" : [ 21, 16, 17 ],
-  "stats" : [ 19, 16, 17, 2 ],
+  "maxStats" : [ 13, 14, 13 ],
+  "stats" : [ 11, 14, 13, 2 ],
   "inventory" : {
     "magical_brews" : [ ],
     "rations" : 10,

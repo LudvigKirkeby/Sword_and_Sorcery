@@ -104,6 +104,13 @@ public class Character extends Stats {
         return maxStats[1];
     }
 
+    public void takeDamage(Adventure adventure, int damage) {
+        adventure.currentStats[0] -= 2;
+        if (adventure.currentStats[0] <= 0) {
+            Death();
+        }
+    }
+
 }
 
 

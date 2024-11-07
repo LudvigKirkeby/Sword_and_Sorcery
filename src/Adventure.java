@@ -20,7 +20,7 @@ public class Adventure {
     JsonNode savefile;
     int[] maxStats = new int[3];
     String[] exits;
-    boolean in_combat = false;
+    boolean inCombat = false;
     int currentRations;
     int[] currentStats = new int[4];
     Location currentLocation;
@@ -42,21 +42,15 @@ public class Adventure {
         }
     }
 
-    void combat(Monster monster) {
-        in_combat = true;
+    void combat() {
+        inCombat = true;
+        Monster monster = new Monster("Ghoul", 10, 2);
         System.out.println("This room contains combat! You are fighting a " + monster.getName());
         while (character.getEndurance() > 0 && monster.getEndurance() > 0) {
             if (character.RollStrength() > monster.RollStrength()) {
-                monster.stats[0] -= 2;
-                if (monster.stats[0] == 0) {
-                    monster.Death();
-                    in_combat = false;
-                }
+                monster.takeDamage(2, inCombat);
             } else {
-                character.stats[0] -= 2;
-                if (character.stats[0] == 0) {
-                    character.Death();
-                }
+                character.takeDamage(this, 2);
             }
         }
     }
@@ -100,17 +94,11 @@ public class Adventure {
 
     public boolean attemptAction(String keyword) {
         Action[] currentLocationActions = currentLocation.getActions();
+
         for (Action action : currentLocationActions) {
             if (action.canExecute(keyword)) {
                 System.out.println(action.execute());
-                int[] action_stats = action.change_stats();
-                for (int i = 0; i < currentStats.length; i++) {
-                    if (i < 3) {
-                        currentStats[i] = currentStats[i] + action_stats[i];
-                    } else {
-                        currentStats[i] += action_stats[i];
-                    }
-                }
+                action.change_stats(currentStats);
                 return true;
             }
         }
@@ -150,7 +138,7 @@ public class Adventure {
     private void go(String direction) {
         Location nextLocation = null;
 
-        if (!in_combat) {
+        if (!inCombat) {
             nextLocation = currentLocation.getDirections(direction);
         }
 
