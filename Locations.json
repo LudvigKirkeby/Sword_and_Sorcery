@@ -40,6 +40,25 @@
 					"stat_change": [-2, 0, 0, 0] 
 				}
 			]
+		},
+		{
+			"name": "TEST",
+			"description": "TEST HERE",
+			"exits": ["null", "null", "null", "null"],
+			"actions": [
+				{
+					"action_description": "Test 1",
+					"action_keyword": "test1",
+					"action_result": "ABCDEFGH",
+					"stat_change": [0, 0, 0, 0] 
+				},
+				{
+					"action_description": "Test 2",
+					"action_keyword": "test2",
+					"action_result": "ABCDEFGH",
+					"stat_change": [0, 0, 0, 0] 
+				}
+			]
 		}
 	]
 }		

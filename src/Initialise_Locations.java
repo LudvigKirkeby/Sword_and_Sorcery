@@ -5,53 +5,55 @@ import java.io.IOException;
 import java.util.*;
 
 public class Initialise_Locations {
-    private ObjectMapper objectMapper;
 
-    Initialise_Locations(ObjectMapper objectMapper, Map<String, Location> locations, String[] exits, Map<String, String[]> exit_map) {
-       try {
-           JsonNode file = objectMapper.readTree(new File("Locations.json"));
-           JsonNode locations_JSON = file.get("locations");
+    public List<Location> loadJsonFile(ObjectMapper objectMapper, List<Edge> edges, Map<String, String[]> exit_map) throws IOException {
+        List<Location> locations = new ArrayList<>();
+        HashMap<String, Location> location_map = new HashMap<>();
+        JsonNode file = objectMapper.readTree(new File("Locations.json"));
+        JsonNode locations_JSON = file.get("locations");
 
-           for (JsonNode n : locations_JSON) {
-               String location_name = n.get("name").asText();
-               String location_desc = n.get("description").asText();
-               if (n.has("actions")) {
-                   for (JsonNode a : n.get("actions")) {
-                       String action_result = a.get("action_result").asText();
-                       String action_desc = a.get("action_description").asText();
-                       String action_keyword = a.get("action_keyword").asText();
+        for (JsonNode n : locations_JSON) {
+            String location_name = n.get("name").asText();
+            String location_desc = n.get("description").asText();
 
-                       int[] action_stats = {0,0,0,0};
-                       for (int i = 0; i < a.get("stat_change").size(); i++) {
-                           action_stats[i] = a.get("stat_change").get(i).asInt();
-                       }
-                       Action newaction = new Action(action_desc, action_keyword, action_result, action_stats);
-                       locations.put(location_name, new Location(location_desc, new Action[]{newaction}));
-                   }
-               } else if (n.has("fight")) {
+            if (n.has("actions")) {
+                List<Action> actions = new ArrayList<>();
+                for (JsonNode a : n.get("actions")) {
+                    String action_result = a.get("action_result").asText();
+                    String action_desc = a.get("action_description").asText();
+                    String action_keyword = a.get("action_keyword").asText();
 
-               } else {
-                   locations.put(location_name, new Location(location_desc));
-               }
-               exits = new String[4];
-               for (int j = 0; j < exits.length; j++) {
-                   exits[j] = n.get("exits").get(j).asText();
-               }
-               exit_map.put(location_name, exits);
-           }
+                    int[] action_stats = {0,0,0,0};
+                    for (int i = 0; i < a.get("stat_change").size(); i++) {
+                        action_stats[i] = a.get("stat_change").get(i).asInt();
+                    }
+                    actions.add(new Action(action_result, action_desc, action_keyword, action_stats));
+                }
+                Location l = new Location(location_name, location_desc, actions);
+                locations.add(l);
+                location_map.put(location_name, l);
+            } else if (n.has("fight")) {
 
-           for (String locationName : exit_map.keySet()) {
-               exits = exit_map.get(locationName);
+            } else {
+                Location l = new Location(location_name, location_desc);
+                locations.add(l);
+                location_map.put(location_name, l);
+            }
 
-               Location northExit = exits[0].equals("null") ? null : locations.get(exits[0]);
-               Location eastExit = exits[1].equals("null") ? null : locations.get(exits[1]);
-               Location southExit = exits[2].equals("null") ? null : locations.get(exits[2]);
-               Location westExit = exits[3].equals("null") ? null : locations.get(exits[3]);
+            int s = n.get("to").size();
+            String[] to = new String[s];
+            String[] exitName = new String[s];
+            Double[] exitLength = new Double[s];
+            for (int j = 0; j < s; j++) {
+                to[j] = n.get("to").get(j).asText();
+                exitName[j] = n.get("exitName").get(j).asText();
+                exitLength[j] = n.get("exitLength").get(j).asDouble();
+            }
+            for (int j = 0; j < to.length; j++) {
+                edges.add(new Edge(location_map.get(location_name), location_map.get(to[j]), exitLength[j], exitName[j]));
+            }
+        }
 
-               locations.get(locationName).setExits(northExit, eastExit, southExit, westExit);
-           }
-       } catch(IOException e) {
-           throw new RuntimeException();
-       }
+        return locations;
     }
 }

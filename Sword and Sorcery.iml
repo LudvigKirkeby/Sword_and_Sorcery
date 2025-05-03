@@ -7,6 +7,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="jackson" level="project" />
+    <orderEntry type="library" exported="" name="jackson-annotations-2.19.0" level="project" />
+    <orderEntry type="library" exported="" name="jackson-core-2.19.0" level="project" />
+    <orderEntry type="library" exported="" name="jackson-databind-2.19.0" level="project" />
   </component>
 </module>

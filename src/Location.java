@@ -1,53 +1,38 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Location {
     public String description;
     public String name;
-    public Location northExit, southExit, eastExit, westExit;
-    Action[] actions;
+    List<Action> actions;
+    List<Edge> adjacent_edges; // Knows its adjacent connections (and thus rooms, with a getter for "to")
 
-    public Location(String description, Action[] actions) { // Constructor with an Action, for rooms with actions
-        this.description = description;
+    Location(String name, String description, List<Action> actions) {
+        this(name, description);
         this.actions = actions;
     }
 
-    public Location(String description) { // Constructor without Action, for rooms with no actions
+    Location(String name, String description) {
         this.description = description;
-        this.actions = new Action[0];
+        this.name = name;
     }
 
-    public Action[] getActions() {
-        return actions;
+    Location() {}
+
+    public void addAction(Action action) {
+        actions.add(action);
     }
 
-    public void setExits(Location north, Location east, Location south, Location west) {
-        northExit = north;
-        eastExit = east;
-        southExit = south;
-        westExit = west;
-    }
+    public void setName(String name) { this.name = name; }
 
-    public String toString() {
-        return description;
-    }
+    public void setDescription(String description) { this.description = description; }
 
-    public void getExitString() {
-        System.out.print("Exits: ");
-        if (northExit != null) System.out.print("north ");
-        if (eastExit != null) System.out.print("east ");
-        if (southExit != null) System.out.print("south ");
-        if (westExit != null) System.out.print("west ");
-        System.out.println();
-    }
+    public List<Action> getActions() { return actions; }
 
-    public Location getDirections(String direction) {
-        Location next_Location;
-        next_Location = switch (direction) {
-            case "north" -> northExit;
-            case "east" -> eastExit;
-            case "south" -> southExit;
-            case "west" -> westExit;
-            default -> null;
-        };
-        return next_Location;
-    }
+    public List<Edge> getAdjacentEdges() { return adjacent_edges; }
+
+    public String getDescription() { return description; }
+
+    public String getName() { return name; }
 
 }

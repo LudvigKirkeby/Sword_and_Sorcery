@@ -128,26 +128,28 @@ public class Adventure {
     }
 
     private void printLocationInfo() {
-        System.out.println(currentLocation);
-        for (Action x : currentLocation.getActions()) {
-            System.out.println(x.getDescription());
+        System.out.println("You are at " + currentLocation.getName());
+        System.out.println(" ");
+        System.out.println(currentLocation.getDescription());
+        System.out.println(" ");
+        System.out.println("You have the following actions ");
+        for (Action a : currentLocation.getActions()) {
+            System.out.println(a.getDescription());
         }
-        currentLocation.getExitString();
+        System.out.println(" ");
+        System.out.println(" ");
+        System.out.println("Exits ");
+        for (Edge e : currentLocation.getAdjacentEdges()) {
+            System.out.println(e.getDirection() + " ");
+        }
     }
 
     private void go(String direction) {
-        Location nextLocation = null;
-
-        if (!inCombat) {
-            nextLocation = currentLocation.getDirections(direction);
+        for (Edge e : currentLocation.getAdjacentEdges()) {
+            if (e.getDirection().equals(direction)) {
+                currentLocation = e.getTo();
+            }
         }
-
-        if (nextLocation != null) {
-            currentLocation = nextLocation;
-            printLocationInfo();
-        } else {
-            System.out.println("There is no door!");
-        }
+        printLocationInfo();
     }
-
 }
