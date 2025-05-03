@@ -8,12 +8,17 @@ public class Initialise_Locations {
 
     public List<Location> loadJsonFile(ObjectMapper objectMapper, List<Edge> edges, Map<String, String[]> exit_map) throws IOException {
         List<Location> locations = new ArrayList<>();
+        String[] to = null;
+        String[] exitName = null;
+        Double[] exitLength = null;
+        String location_name = null;
+
         HashMap<String, Location> location_map = new HashMap<>();
         JsonNode file = objectMapper.readTree(new File("Locations.json"));
         JsonNode locations_JSON = file.get("locations");
 
         for (JsonNode n : locations_JSON) {
-            String location_name = n.get("name").asText();
+            location_name = n.get("name").asText();
             String location_desc = n.get("description").asText();
 
             if (n.has("actions")) {
@@ -41,19 +46,20 @@ public class Initialise_Locations {
             }
 
             int s = n.get("to").size();
-            String[] to = new String[s];
-            String[] exitName = new String[s];
-            Double[] exitLength = new Double[s];
+            to = new String[s];
+            exitName = new String[s];
+            exitLength = new Double[s];
             for (int j = 0; j < s; j++) {
                 to[j] = n.get("to").get(j).asText();
                 exitName[j] = n.get("exitName").get(j).asText();
-                exitLength[j] = n.get("exitLength").get(j).asDouble();
-            }
-            for (int j = 0; j < to.length; j++) {
-                edges.add(new Edge(location_map.get(location_name), location_map.get(to[j]), exitLength[j], exitName[j]));
+                if (n.get("exitLength").get(j) == null) { exitLength[j] = 0.0; } else {
+                    exitLength[j] = n.get("exitLength").get(j).asDouble();
+                }
             }
         }
-
+        for (int j = 0; j < to.length; j++) {
+            edges.add(new Edge(location_map.get(location_name), location_map.get(to[j]), exitLength[j], exitName[j]));
+        }
         return locations;
     }
 }

@@ -44,7 +44,9 @@
 		{
 			"name": "TEST",
 			"description": "TEST HERE",
-			"exits": ["null", "null", "null", "null"],
+			"to": ["blockade_brown_cobblestone", "somewhere"],
+			"exitName": ["south", "north"],
+			"exitLength": [0, 999],
 			"actions": [
 				{
 					"action_description": "Test 1",
