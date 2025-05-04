@@ -6,12 +6,11 @@ import java.util.*;
 
 public class Initialise_Locations {
 
-    public List<Location> loadJsonFile(ObjectMapper objectMapper, List<Edge> edges, Map<String, String[]> exit_map) throws IOException {
+    public List<Location> loadJsonFile(ObjectMapper objectMapper, List<Edge> edges) throws IOException {
         List<Location> locations = new ArrayList<>();
-        String[] to = null;
-        String[] exitName = null;
-        Double[] exitLength = null;
         String location_name = null;
+        Location l = null;
+        HashMap<String, toLocation> to_location_map = new HashMap<>();
 
         HashMap<String, Location> location_map = new HashMap<>();
         JsonNode file = objectMapper.readTree(new File("Locations.json"));
@@ -34,32 +33,45 @@ public class Initialise_Locations {
                     }
                     actions.add(new Action(action_result, action_desc, action_keyword, action_stats));
                 }
-                Location l = new Location(location_name, location_desc, actions);
+                l = new Location(location_name, location_desc, actions);
                 locations.add(l);
                 location_map.put(location_name, l);
             } else if (n.has("fight")) {
 
             } else {
-                Location l = new Location(location_name, location_desc);
+                l = new Location(location_name, location_desc);
                 locations.add(l);
                 location_map.put(location_name, l);
             }
 
             int s = n.get("to").size();
-            to = new String[s];
-            exitName = new String[s];
-            exitLength = new Double[s];
+            toLocation t = new toLocation(new String[s], new String[s], new Double[s]);
+            to_location_map.put(location_name, t);
             for (int j = 0; j < s; j++) {
-                to[j] = n.get("to").get(j).asText();
-                exitName[j] = n.get("exitName").get(j).asText();
-                if (n.get("exitLength").get(j) == null) { exitLength[j] = 0.0; } else {
-                    exitLength[j] = n.get("exitLength").get(j).asDouble();
+                t.to[j] = n.get("to").get(j).asText();
+                t.exitName[j] = n.get("exitName").get(j).asText();
+                if (n.get("exitLength").get(j) == null) { t.exitLength[j] = 0.0; } else {
+                    t.exitLength[j] = n.get("exitLength").get(j).asDouble();
                 }
             }
         }
-        for (int j = 0; j < to.length; j++) {
-            edges.add(new Edge(location_map.get(location_name), location_map.get(to[j]), exitLength[j], exitName[j]));
+        for (Location loc : locations) {
+            toLocation to_loc = to_location_map.get(loc.getName());
+            for (int i = 0; i < to_loc.to.length; i++) {
+                edges.add(new Edge(loc, location_map.get(to_loc.to[i]), to_loc.exitLength[i], to_loc.exitName[i]));
+            }
         }
         return locations;
+    }
+
+    static class toLocation {
+        String[] to, exitName;
+        Double[] exitLength;
+
+        toLocation(String[] to, String[] exitName, Double[] exitLength) {
+            this.to = to;
+            this.exitName = exitName;
+            this.exitLength = exitLength;
+        }
     }
 }

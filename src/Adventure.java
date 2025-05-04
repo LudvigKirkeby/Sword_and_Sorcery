@@ -31,7 +31,7 @@ public class Adventure {
         exit_map = new HashMap<>();
         Equipment = new HashMap<>();
 
-        new Initialise_Locations(objectMapper, locations, exits, exit_map);
+        new Initialise_Locations(objectMapper, locations, exits);
     }
 
     void NewGame_or_Load() {
