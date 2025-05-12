@@ -29,8 +29,23 @@ public class Action {
         return currentStats;
     }
 
-    public String execute(){
-        return result;
+    // This method is horrible.
+    public void printResult() {
+        StringBuilder segmented = new StringBuilder();
+        String[] words = result.split(" ");
+        short count = 0;
+        for (String word : words) {
+            segmented.append(word);
+            segmented.append(" ");
+            count++;
+            if (count == 15) {
+                System.out.println(segmented);
+                System.out.println();
+                segmented = new StringBuilder();
+                count = 0;
+            }
+        }
+        System.out.println(segmented);
     }
 
     public String getDescription(){

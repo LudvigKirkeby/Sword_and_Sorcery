@@ -3,15 +3,19 @@
 		{ 
 			"name": "beginning",
 			"description": "You stand at the precipice of adventure. If you dare, step north.",
-			"exits": ["beginning_dark_tunnel", "null", "null", "null"]
+			"to": ["beginning_dark_tunnel"],
+			"exitName": ["north"],
+			"exitLength": [0]
 		},
 		{
 			"name": "beginning_dark_tunnel",
 			"description": "You are in a dark tunnel. Insects crawl over the walls and rats scurry beneath your feet. Above your head, you see a gentle, shimmering light of crystals bathing the otherwise dark tunnel in a blue-ish light. At the end of the tunnel, you stumble across a stone table. On it are six boxes. One of them with your name on it.",
-			"exits": ["fork_in_the_dark_tunnel", "null", "beginning", "null"], 
+			"to": ["beginning", "fork_in_the_dark_tunnel"],
+			"exitName": ["south", "north"],
+			"exitLength": [0, 0],
 			"actions": [
 				{
-					"action_description": "Do you want to open the box with your name on it?",
+					"action_description": "open the box",
 					"action_keyword": "open", 
 					"action_result": "Inside the box there are two gold pieces and a letter, which says: Well done. Youve finally learned to stop up and enjoy the goods left to you by others. Such a talent will be needed if you are to survive the Labyrinth of Death. Signed Sukumvit.",
 					"stat_change": [0, 0, 0, 2] 
@@ -21,17 +25,30 @@
 		{
 			"name": "fork_in_the_dark_tunnel",
 			"description": "There are two paths in the tunnel. Three sets of footprints lead west, while a set of wet footprints lead east. These must be the remainders of those who came before you.",
-			"exits": ["null", "blockade_in_the_dark", "null", "null"]
+			"to": ["darkened_tunnel", "blockade_in_the_dark"],
+			"exitName": ["west", "east"],
+			"exitLength": [0, 0]
+		},
+		{
+			"name": "darkened_tunnel",
+			"description": "Ahead you can see a large blockade on the tunnel floor, though its too dark to see what it is. The wet footprints you've followed proceed towards the blockade. If you want to continue, head east. Otherwise you can go back south and head west instead.",
+			"to": ["fork_in_the_dark_tunnel"],
+			"exitName": ["east"],
+			"exitLength": [0]
 		},
 		{
 			"name": "blockade_in_the_dark",
 			"description": "Ahead you can see a large blockade on the tunnel floor, though its too dark to see what it is. The wet footprints you've followed proceed towards the blockade. If you want to continue, head east. Otherwise you can go back south and head west instead.",
-			"exits": ["null", "blockade_brown_cobblestone", "fork_in_the_dark_tunnel", "null"]
+			"to": ["blockade_brown_cobblestone", "fork_in_the_dark_tunnel"],
+			"exitName": ["east", "west"],
+			"exitLength": [0, 0]
 		},
 		{
 			"name": "blockade_brown_cobblestone",
 			"description": "You can finally make out the blockade, and notice, that it is a slimy and brownish large cobblestone shaped object. You can attempt to slice it open with your sword, or you can try to climb over it by continuing east.",
-			"exits": ["null", "climb_over_the_brown_cobblestone", "null", "null"],
+			"to": [],
+			"exitName": ["east"],
+			"exitLength": [0],
 			"actions": [
 				{
 					"action_description": "Do you want to slice it open?",
@@ -40,27 +57,6 @@
 					"stat_change": [-2, 0, 0, 0] 
 				}
 			]
-		},
-		{
-			"name": "TEST",
-			"description": "TEST HERE",
-			"to": ["blockade_brown_cobblestone", "somewhere"],
-			"exitName": ["south", "north"],
-			"exitLength": [0, 999],
-			"actions": [
-				{
-					"action_description": "Test 1",
-					"action_keyword": "test1",
-					"action_result": "ABCDEFGH",
-					"stat_change": [0, 0, 0, 0] 
-				},
-				{
-					"action_description": "Test 2",
-					"action_keyword": "test2",
-					"action_result": "ABCDEFGH",
-					"stat_change": [0, 0, 0, 0] 
-				}
-			]
 		}
 	]
-}		
+}

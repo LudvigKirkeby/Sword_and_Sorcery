@@ -1,56 +1,46 @@
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Adventure {
     boolean new_Game = false;
     ObjectMapper objectMapper = new ObjectMapper();
     Character character;
-    Map<String, Location> locations;
-    Map<String, String[]> exit_map;
-    Map<String, Integer> Equipment;
-    JsonNode savefile;
-    int[] maxStats = new int[3];
-    String[] exits;
     boolean inCombat = false;
-    int currentRations;
-    int[] currentStats = new int[4];
-    Location currentLocation;
+    Location currentLocation = new Location();
+    List<Location> locations = new ArrayList<>();
+    List<Edge> edges = new ArrayList<>();
 
-    public Adventure() {
+    public Adventure() throws IOException {
         character = new Character();
-        locations = new HashMap<>();
-        exit_map = new HashMap<>();
-        Equipment = new HashMap<>();
-
-        new Initialise_Locations(objectMapper, locations, exits);
+        Initialise_Locations init = new Initialise_Locations();
+        LocationGraph G = new LocationGraph();
+        init.loadJsonFile(objectMapper, locations, edges); // Updates the locations and edges list via reading a JSON file
+        G.addNodes(locations);
+        G.addEdges(edges);
+        currentLocation = G.getLocations().getFirst();
     }
 
     void NewGame_or_Load() {
         if (new_Game) {
-            character.createNewCharacter(objectMapper, locations, this);
+            character.createNewCharacter(objectMapper);
         } else {
-            character.loadSaveData(objectMapper, locations, this);
+            character.loadSaveData(objectMapper);
         }
     }
 
     void combat() {
         inCombat = true;
-        Monster monster = new Monster("Ghoul", 10, 2);
+        Enemy monster = new Enemy("Ghoul", 10, 2);
         System.out.println("This room contains combat! You are fighting a " + monster.getName());
         while (character.getEndurance() > 0 && monster.getEndurance() > 0) {
             if (character.RollStrength() > monster.RollStrength()) {
                 monster.takeDamage(2, inCombat);
             } else {
-                character.takeDamage(this, 2);
+                character.takeDamage(2);
             }
         }
     }
@@ -77,79 +67,76 @@ public class Adventure {
     }
 
     public boolean processCommand(String command) throws IOException {
-        if (command.equals("go")) {
-            System.out.println("Go where?");
-            String direction = userInput();
-            go(direction);
-        } else if (command.equals("quit")) {
-            saving();
-            return true;
-        } else if (command.equals("stats")) {
-            character.StatOverview(this);
-        } else if (!attemptAction(command)) {
-            System.out.println("Speak louder, Friend. I didnt quite catch that.");
+        switch (command) {
+            case "quit":
+                character.saveCharacterData(objectMapper, currentLocation);
+                return true;
+
+            case "stats":
+                character.StatOverview();
+                break;
+
+            default:
+                attemptAction(command);
+                go(command);
+                break;
         }
         return false;
+
+//        if (command.equals("go")) {
+//            System.out.println("Go where?");
+//            String direction = userInput();
+//            go(direction);
+//        } else if (command.equals("quit")) {
+//
+//        } else if (command.equals("stats")) {
+//
+//        } else if (!attemptAction(command)) {
+//            System.out.println("Speak louder, Friend. I didnt quite catch that.");
+//        }
+//        return false;
     }
 
     public boolean attemptAction(String keyword) {
-        Action[] currentLocationActions = currentLocation.getActions();
+        List<Action> currentLocationActions = currentLocation.getActions();
 
+        if (currentLocationActions == null) { return false; }
         for (Action action : currentLocationActions) {
             if (action.canExecute(keyword)) {
-                System.out.println(action.execute());
-                action.change_stats(currentStats);
+                action.printResult();
+                action.change_stats(character.getCurrentStats());
                 return true;
             }
         }
         return false;
     }
 
-    private void saving() throws IOException {
-        savefile = objectMapper.readTree(new File("Playerdata.json"));
-        try {
-            System.out.println("Player data saved to " + "C:/Users/ludvi/IdeaProjects/Sword and Sorcery/Playerdata.json");
-
-            for (Entry<String, Location> entry : locations.entrySet()) {
-                if (entry.getValue() == currentLocation) {
-                    ((ObjectNode) savefile).put("location_name", entry.getKey());
-                }
-            }
-            for (int i = 0; i < 4; i++) {
-                ((ArrayNode) savefile.get("stats")).set(i, currentStats[i]);
-            }
-
-            ((ObjectNode) savefile.get("inventory")).put("rations", currentRations);
-            objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File("C:/Users/ludvi/IdeaProjects/Sword and Sorcery/Playerdata.json"), savefile);
-            System.out.println("Successfully saved the game.");
-        } catch (IOException e) {
-            System.out.println("Error: Game did not save.");
-        }
-    }
-
     private void printLocationInfo() {
         System.out.println("You are at " + currentLocation.getName());
         System.out.println(" ");
-        System.out.println(currentLocation.getDescription());
+        currentLocation.printDescription();
         System.out.println(" ");
-        System.out.println("You have the following actions ");
-        for (Action a : currentLocation.getActions()) {
+
+        if (currentLocation.getActions() != null) {
+            System.out.println("You have the following actions ");
+            for (Action a : currentLocation.getActions()) {
             System.out.println(a.getDescription());
+            }
         }
-        System.out.println(" ");
-        System.out.println(" ");
-        System.out.println("Exits ");
+
+        System.out.print("Exits: ");
         for (Edge e : currentLocation.getAdjacentEdges()) {
-            System.out.println(e.getDirection() + " ");
+            System.out.print(e.getDirection() + " ");
         }
+        System.out.println();
     }
 
     private void go(String direction) {
         for (Edge e : currentLocation.getAdjacentEdges()) {
             if (e.getDirection().equals(direction)) {
                 currentLocation = e.getTo();
+                printLocationInfo();
             }
         }
-        printLocationInfo();
     }
 }

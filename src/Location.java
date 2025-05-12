@@ -5,11 +5,12 @@ public class Location {
     public String description;
     public String name;
     List<Action> actions;
-    List<Edge> adjacent_edges; // Knows its adjacent connections (and thus rooms, with a getter for "to")
+    List<Edge> adjacent_edges = new ArrayList<>(); // Knows its adjacent connections (and thus rooms, with a getter for "to")
 
     Location(String name, String description, List<Action> actions) {
         this(name, description);
         this.actions = actions;
+
     }
 
     Location(String name, String description) {
@@ -31,7 +32,22 @@ public class Location {
 
     public List<Edge> getAdjacentEdges() { return adjacent_edges; }
 
-    public String getDescription() { return description; }
+    public void printDescription() {  StringBuilder segmented = new StringBuilder();
+        String[] words = description .split(" ");
+        short count = 0;
+        for (String word : words) {
+            segmented.append(word);
+            segmented.append(" ");
+            count++;
+            if (count == 20) {
+                System.out.println(segmented);
+                System.out.println();
+                segmented = new StringBuilder();
+                count = 0;
+            }
+        }
+        System.out.println(segmented);
+    }
 
     public String getName() { return name; }
 
